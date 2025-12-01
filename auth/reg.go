@@ -74,6 +74,25 @@ func CheckAuthHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(username))
 }
+func LogOutHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	expiredCookie := http.Cookie{
+		Name:     "auth_token",               // Имя куки, которое вы устанавливали при входе
+		Value:    "",                         // Обнуляем значение токена
+		Path:     "/",                        // Путь должен совпадать
+		Expires:  time.Now().Add(-time.Hour), // Устанавливаем дату в прошлом
+		MaxAge:   -1,                         // Также устанавливаем MaxAge в отрицательное значение
+		HttpOnly: true,                       // Важно: HttpOnly должен быть true
+		Secure:   false,                      // Используйте 'true', если работаете по HTTPS
+	}
+	http.SetCookie(w, &expiredCookie)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("Logged out successfully"))
+}
 func LoadUser() ([]User, error) {
 	data, err := os.ReadFile(dataFile)
 	if err != nil {

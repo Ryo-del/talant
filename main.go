@@ -14,6 +14,7 @@ func main() {
 	mux.HandleFunc("/createankety", ankety.CreateHandler)
 	mux.HandleFunc("/showankety", ankety.ShowAnketyHandler)
 	mux.HandleFunc("/checkauth", auth.CheckAuthHandler)
+	mux.HandleFunc("/logout", auth.LogOutHandler)
 	fs := http.FileServer(http.Dir("./frontend"))
 	mux.Handle("/", fs)
 

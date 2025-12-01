@@ -259,13 +259,33 @@ showAnketyBtn.addEventListener('click', () => {
     }
 });
 
-logoutBtn.addEventListener('click', () => {
-    // Поскольку кука HttpOnly, мы не можем удалить её в JS.
-    // Мы полагаемся на то, что кука истечет (Expires в Go) 
-    // или будет перезаписана при следующем входе.
-    // На клиенте мы просто сбрасываем статус авторизации и UI.
-    alert('Выход выполнен. Для полного удаления сессии токен должен истечь.');
-    updateUI(false);
+logoutBtn.addEventListener('click', async () => {
+    try {
+        const response = await fetch('/logout', {
+            method: 'POST', // Отправляем запрос на сервер для удаления куки
+            credentials: 'include' // Это заставляет браузер включить куку в запрос
+        });
+
+        if (response.ok) {
+            // Кука успешно удалена сервером.
+            alert('Вы успешно вышли из системы.');
+            
+            // Сбрасываем клиентский статус и обновляем UI
+            updateUI(false); 
+            
+            // Возвращаем пользователя к форме входа
+            showContainer(authContainer); 
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signin-form').classList.add('hidden');
+            
+        } else {
+            // Если сервер вернул ошибку
+            alert('Ошибка выхода. Попробуйте снова.');
+        }
+    } catch (error) {
+        console.error('Ошибка сети при выходе:', error);
+        alert('Ошибка сети при попытке выхода.');
+    }
 });
 
 // Инициализация при загрузке страницы
