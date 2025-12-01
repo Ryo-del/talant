@@ -63,7 +63,17 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unauthorized: invalid token", http.StatusUnauthorized)
 		return
 	}
-
+	anketyList, err := LoadUser()
+	if err != nil {
+		http.Error(w, "Error loading ankety", http.StatusInternalServerError)
+		return
+	}
+	for _, a := range anketyList {
+		if a.UserId == userID {
+			http.Error(w, "Ankety already exists for this user", http.StatusBadRequest)
+			return
+		}
+	}
 	// Сохраняем отдельный id анкеты и привязываем к ней userID
 	ankety := Ankety{
 		Id:     uuid.New().String(),
@@ -74,11 +84,7 @@ func CreateHandler(w http.ResponseWriter, r *http.Request) {
 		Job:    job,
 		School: school,
 	}
-	anketyList, err := LoadUser()
-	if err != nil {
-		http.Error(w, "Error loading ankety", http.StatusInternalServerError)
-		return
-	}
+
 	anketyList = append(anketyList, ankety)
 	updatedData, err := json.MarshalIndent(anketyList, "", "  ")
 	if err != nil {
