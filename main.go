@@ -13,6 +13,7 @@ func main() {
 	mux.HandleFunc("/login", auth.LoaginHandler)
 	mux.HandleFunc("/createankety", ankety.CreateHandler)
 	mux.HandleFunc("/showankety", ankety.ShowAnketyHandler)
+	mux.HandleFunc("/checkauth", auth.CheckAuthHandler)
 	fs := http.FileServer(http.Dir("./frontend"))
 	mux.Handle("/", fs)
 

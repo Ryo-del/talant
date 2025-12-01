@@ -111,13 +111,9 @@ document.getElementById('login-form').addEventListener('submit', function(e) {
     e.preventDefault();
     submitForm('/login', 'login-form', 'Вход успешен!', 
         async (formData) => {
-            // Устанавливаем статус авторизации и имя пользователя (из формы)
-            isLoggedIn = true;
-            currentUsername = formData.get('username'); // Используем имя из формы
-            updateUI(isLoggedIn);
-            
-            // Сразу переходим к созданию/просмотру анкет
-            showContainer(createAnketyContainer); 
+            // Вместо ручного обновления статуса, запускаем checkAuthStatus.
+            // Это гарантирует, что UI обновится, только если кука успешно установлена.
+            await checkAuthStatus();
         }
     );
 });
@@ -134,7 +130,37 @@ document.getElementById('create-ankety-form').addEventListener('submit', functio
     );
 });
 
+async function checkAuthStatus() {
+    try {
+        const response = await fetch('/checkauth', {
+            method: 'GET',
+            // Важно: credentials: 'include' гарантирует, что браузер отправит куки 'auth_token'
+            credentials: 'include' 
+        });
 
+        if (response.ok) {
+            // Токен валиден. Сервер вернул имя пользователя в теле ответа.
+            const username = await response.text();
+            
+            isLoggedIn = true;
+            currentUsername = username;
+            updateUI(isLoggedIn);
+            
+            // Если авторизован, показываем список анкет (или любую другую главную страницу)
+            showContainer(anketyListContainer);
+            await loadAnketyList(); 
+            
+        } else if (response.status === 401) {
+            // Токен отсутствует или невалиден/истёк
+            console.log('Пользователь не авторизован или сессия истекла.');
+            updateUI(false); 
+        }
+        // Если другая ошибка, updateUI(false) сработает по умолчанию
+    } catch (error) {
+        console.error('Ошибка сети при проверке авторизации:', error);
+        updateUI(false); // На всякий случай сбросим UI
+    }
+}
 // 4. Загрузка и отображение анкет
 async function loadAnketyList() {
     const listElement = document.getElementById('ankety-list');
@@ -244,5 +270,6 @@ logoutBtn.addEventListener('click', () => {
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    updateUI(isLoggedIn);
+    // При загрузке страницы первым делом проверяем, есть ли валидный токен
+    checkAuthStatus();
 });
