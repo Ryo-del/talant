@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	mux := http.NewServeMux() //mux
+	mux := http.NewServeMux()
 	mux.HandleFunc("/singin", auth.SingInHandler)
 	mux.HandleFunc("/login", auth.LoaginHandler)
 	mux.HandleFunc("/checkauth", auth.CheckAuthHandler)
