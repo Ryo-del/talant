@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-
 	"talant/auth"
 
 	"github.com/google/uuid"
@@ -37,6 +36,7 @@ func LoadUser() ([]Ankety, error) {
 	}
 	return ankety, nil
 }
+
 func CreateHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
