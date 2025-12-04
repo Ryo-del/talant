@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talent Platform</title>
+    <title>Job Board</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <div class="logo">Talent Finder</div>
+        <div class="logo">Job Finder Pro</div>
         <nav>
             <button id="show-login-btn">Вход</button>
             <button id="show-signin-btn">Регистрация</button>
-            <button id="show-ankety-btn" style="display: none;">Показать Анкеты</button>
-            <button id="show-create-ankety-btn" style="display: none;">Создать Анкету</button>
+            <button id="show-jobs-btn" style="display: none;">Вакансии</button>
+            <button id="show-create-job-btn" style="display: none;">Создать вакансию</button>
+            <button id="show-my-jobs-btn" style="display: none;">Мои вакансии</button>
             <button id="logout-btn" style="display: none;">Выход</button>
             <span id="welcome-message" style="display: none;"></span>
         </nav>
     </header>
 
     <main>
+        <!-- Контейнер авторизации -->
         <div id="auth-container" class="form-container active">
             <form id="login-form" class="auth-form active">
                 <h2>Вход</h2>
-                <input type="text" name="username" placeholder="Имя пользователя или Email" required>
+                <input type="text" name="username" placeholder="Имя пользователя" required>
                 <input type="password" name="password" placeholder="Пароль" required>
                 <button type="submit">Войти</button>
                 <p class="form-message"></p>
@@ -41,31 +43,71 @@
             </form>
         </div>
 
-        <div id="create-ankety-container" class="form-container hidden">
-            <form id="create-ankety-form">
-                <h2>Создать Анкету</h2>
-                <input type="text" name="name" placeholder="Полное имя" required>
-                <select name="gender" required>
-                    <option value="" disabled selected>Пол</option>
-                    <option value="male">Мужской</option>
-                    <option value="female">Женский</option>
-                    <option value="other">Другой</option>
+        <!-- Контейнер создания вакансии -->
+        <div id="create-job-container" class="form-container hidden">
+            <form id="create-job-form">
+                <h2>Создать вакансию</h2>
+                <input type="text" name="title" placeholder="Название вакансии" required>
+                <input type="text" name="company" placeholder="Компания" required>
+                <input type="text" name="description" placeholder="Описание" required>
+                <input type="text" name="salary" placeholder="Зарплата" required>
+                <input type="text" name="skills" placeholder="Требуемые навыки (через запятую)" required>
+                <input type="text" name="location" placeholder="Местоположение">
+                <input type="text" name="experience" placeholder="Требуемый опыт">
+                <select name="job_type">
+                    <option value="" disabled selected>Тип занятости</option>
+                    <option value="full">Полная занятость</option>
+                    <option value="part">Частичная занятость</option>
+                    <option value="remote">Удалённая работа</option>
+                    <option value="internship">Стажировка</option>
                 </select>
-                <input type="number" name="age" placeholder="Возраст" required min="16" max="100">
-                <input type="text" name="job" placeholder="Профессия/Специальность" required>
-                <input type="text" name="school" placeholder="Образование/Учебное заведение" required>
-                <button type="submit">Сохранить Анкету</button>
+                <button type="submit">Опубликовать вакансию</button>
                 <p class="form-message"></p>
             </form>
         </div>
 
-        <div id="ankety-list-container" class="form-container hidden">
-            <h2>Список Анкет</h2>
-            <div id="ankety-list">
-                </div>
+        <!-- Контейнер списка всех вакансий -->
+        <div id="jobs-list-container" class="form-container hidden">
+            <h2>Все вакансии</h2>
+            <div class="filters">
+                <input type="text" id="search-input" placeholder="Поиск по названию или компании...">
+                <select id="job-type-filter">
+                    <option value="">Все типы</option>
+                    <option value="full">Полная занятость</option>
+                    <option value="part">Частичная занятость</option>
+                    <option value="remote">Удалённая работа</option>
+                    <option value="internship">Стажировка</option>
+                </select>
+                <select id="salary-filter">
+                    <option value="">Любая зарплата</option>
+                    <option value="0-50000">До 50,000 ₽</option>
+                    <option value="50000-100000">50,000 - 100,000 ₽</option>
+                    <option value="100000-200000">100,000 - 200,000 ₽</option>
+                    <option value="200000+">Более 200,000 ₽</option>
+                </select>
+            </div>
+            <div id="jobs-list"></div>
             <p class="form-message"></p>
         </div>
 
+        <!-- Контейнер моих вакансий -->
+        <div id="my-jobs-container" class="form-container hidden">
+            <h2>Мои вакансии</h2>
+            <div id="my-jobs-list"></div>
+            <p class="form-message"></p>
+        </div>
+
+        <!-- Контейнер деталей вакансии -->
+        <div id="job-details-container" class="form-container hidden">
+            <h2 id="job-details-title"></h2>
+            <div id="job-details-content"></div>
+            <div class="job-actions">
+                <button id="edit-job-btn" class="secondary">Редактировать</button>
+                <button id="delete-job-btn" class="danger">Удалить</button>
+                <button id="back-to-list-btn" class="primary">Назад к списку</button>
+            </div>
+            <p class="form-message"></p>
+        </div>
     </main>
 
     <script src="script.js"></script>

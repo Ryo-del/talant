@@ -88,6 +88,14 @@ func LogOutHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,                       // Важно: HttpOnly должен быть true
 		Secure:   false,                      // Используйте 'true', если работаете по HTTPS
 	}
+	http.SetCookie(w, &http.Cookie{
+		Name:     "id_cookie", // Используем более явное имя
+		Value:    "",
+		HttpOnly: true,  // Защита от XSS
+		Secure:   false, // !!! Использовать TRUE для продакшена (HTTPS)
+		Expires:  time.Now().Add(24 * time.Hour),
+		Path:     "/",
+	})
 	http.SetCookie(w, &expiredCookie)
 
 	w.WriteHeader(http.StatusOK)
@@ -201,6 +209,7 @@ func LoaginHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
+	userID := authenticatedUser.Id
 
 	// 2. ГЕНЕРАЦИЯ НОВОГО ТОКЕНА (Правильно!)
 	tokenString, err := GenerateJWT(authenticatedUser.Id, authenticatedUser.Username)
@@ -213,6 +222,14 @@ func LoaginHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "auth_token", // Используем более явное имя
 		Value:    tokenString,
+		HttpOnly: true,  // Защита от XSS
+		Secure:   false, // !!! Использовать TRUE для продакшена (HTTPS)
+		Expires:  time.Now().Add(24 * time.Hour),
+		Path:     "/",
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name:     "id_cookie", // Используем более явное имя
+		Value:    userID,
 		HttpOnly: true,  // Защита от XSS
 		Secure:   false, // !!! Использовать TRUE для продакшена (HTTPS)
 		Expires:  time.Now().Add(24 * time.Hour),
