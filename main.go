@@ -5,10 +5,18 @@ import (
 	"net/http"
 	"talant/ankety"
 	"talant/auth"
+	"talant/job"
 )
 
 func main() {
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /job/{id}", job.OpenHandler)
+	mux.HandleFunc("POST /createjob", job.CreateHandler)
+	mux.HandleFunc("GET /showjobs", job.GetAllHandler)
+	mux.HandleFunc("GET /myjobs", job.MyjobHandler)
+	mux.HandleFunc("PUT /job/{id}", job.UpdateHandler)
+	mux.HandleFunc("DELETE /job/{id}", job.DeleteHandler)
+
 	mux.HandleFunc("/singin", auth.SingInHandler)
 	mux.HandleFunc("/login", auth.LoaginHandler)
 	mux.HandleFunc("/checkauth", auth.CheckAuthHandler)
